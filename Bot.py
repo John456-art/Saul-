@@ -455,9 +455,22 @@ def back_to_main_from_admin(message):
 def admin_panel_btn(message):
     admin_panel(message)
 
-# ==================== اجرا ====================
-print("ربات روشن شد...")
-try:
-    bot.infinity_polling()
-except Exception as e:
-    print(f"خطای شبکه: {e}")
+# ==================== وب سرور برای Render ====================
+app = Flask(__name__)
+
+@app.route('/')
+def health_check():
+    return "Bot is running!", 200
+
+def run_bot():
+    print("ربات روشن شد...")
+    try:
+        bot.infinity_polling()
+    except Exception as e:
+        print(f"خطای شبکه: {e}")
+
+if __name__ == '__main__':
+    # اجرای ربات در یک ترد جداگانه
+    threading.Thread(target=run_bot).start()
+    # اجرای وب سرور برای اینکه Render فکر کنه یه سایته
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
